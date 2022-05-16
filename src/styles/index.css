@@ -1,0 +1,17 @@
+*{
+  --screenPadding : 1.2rem;
+}
+
+body{
+  overflow-x:hidden;
+}
+
+.blockButton{
+  position:absolute;
+  bottom:0px;
+  left:50%;
+  transform:translateX(-50%);
+  display:block;
+  margin-bottom:1.5rem;
+  width:calc(100% - calc(2 * var(--screenPadding)));
+}
