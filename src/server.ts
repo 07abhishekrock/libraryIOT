@@ -6,11 +6,12 @@ import compression from 'compression';
 import serveStatic from 'serve-static';
 import {v4 as uuidv4} from 'uuid';
 import WebSocket , {WebSocketServer} from 'ws';
+import http from 'http';
 
 import type { appLocals, CustomWebsocket, DeviceType, MessageData, WebsocketDevice, RfidTransaction } from './utils/types';
 import { safeJsonParse } from './utils/helpers';
 import { sendClientDeviceList } from './utils/helpers/websocket';
-import { MESSAGE_TYPES } from './utils/constants';
+import { MESSAGE_TYPES, PING_TIMEOUT } from './utils/constants';
 
 let js = JSON.stringify;
 
@@ -23,8 +24,20 @@ const createServer = async ()=>{
   const isProd = process.env.NODE_ENV === 'production';
   const isTest = false;
   const app = express();
+  const server = http.createServer(app);
   const wss = new WebSocketServer<CustomWebsocket>({
-    port : 5000
+    noServer : true,
+    path : '/socket'
+  });
+  
+
+  server.on("upgrade", (request, socket, head) => {
+
+    console.log(request.headers);
+    
+    wss.handleUpgrade(request, socket, head, (websocket) => {
+      wss.emit("connection", websocket, request);
+    });
   });
 
   let pendingTransactions : RfidTransaction[] = [];
@@ -178,6 +191,15 @@ const createServer = async ()=>{
           wsNode.send(js({
             msgType : MESSAGE_TYPES.ACKNOWLEDGE_DEVICE_TYPE
           } as MessageData))
+
+          if(wsNode.type === 'device'){
+            wsNode.send("ping");
+            wsNode.pingTimeout = setTimeout(()=>{
+              wsNode.isAlive = false;
+              cancelPendingTransactionsForDevice(wsNode.code);
+              sendBrowserDeviceList();
+            } ,PING_TIMEOUT) 
+          }
           break;
         }
 
@@ -272,12 +294,22 @@ const createServer = async ()=>{
     })
 
     ws.on('message' , (message)=>{
+      console.log(message.toString());
+      if(message.toString() === 'pong' && ws.type === 'device'){
+        clearTimeout(ws.pingTimeout);
+        ws.isAlive = true;
+        sendBrowserDeviceList();
+        ws.pingTimeout = setTimeout(()=>{
+          ws.isAlive = false;
+          sendBrowserDeviceList();
+          cancelPendingTransactionsForDevice(ws.code);
+        } , PING_TIMEOUT)
+      }
       handleWebsocketMessages(message , ws);
     })
 
   })
 
-     
 
   app.use('*', async (req, res) => {
       try {
@@ -300,11 +332,11 @@ const createServer = async ()=>{
       }
     })
 
-    return { app, vite }
+    return { app, vite, server }
 }
 
-createServer().then(({app})=>{
-  app.listen(3002 , ()=>{
+createServer().then(({app , server})=>{
+  server.listen(3002 , ()=>{
       console.log('listening on 3002');
   })
 });

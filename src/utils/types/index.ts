@@ -21,6 +21,7 @@ export type CustomWebsocket = WebSocket.WebSocket & ({
   type : 'device';
   isAlive : boolean;
   isActive : boolean;
+  pingTimeout : NodeJS.Timeout,
   code ?: string;
 } | {
   id : string;

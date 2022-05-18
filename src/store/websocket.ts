@@ -8,7 +8,7 @@ import type { MessageData } from "../utils/types";
 
 const initialiseWebsocket = ()=>{
   
-  const ws = new WebSocket('ws://localhost:5000');
+  const ws = new WebSocket('ws://localhost:3002/socket');
 
   const waitForWebsocketToBecomeActive = ()=>{
     return new Promise((resolve , reject)=>{

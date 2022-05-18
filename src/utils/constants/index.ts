@@ -36,3 +36,5 @@ export enum MESSAGE_TYPES{
 export const SESSION_TIMEOUT_VALUE = 1000 * 60 * 10;
 
 export const ISSUE_DURATION_DEFAULT = 7 * 24 * 3600 * 1000;
+
+export const PING_TIMEOUT = 1000 * 20;
