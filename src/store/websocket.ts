@@ -7,8 +7,16 @@ import type { MessageData } from "../utils/types";
 //tell your device type
 
 const initialiseWebsocket = ()=>{
+
+  let websocketURL = window.location.origin.concat('/socket');
+  if(websocketURL.startsWith('https://')){
+    websocketURL = websocketURL.replace('https://' , 'wss://');
+  }
+  else{
+    websocketURL = websocketURL.replace('http://' , 'ws://');
+  }
   
-  const ws = new WebSocket('ws://localhost:3002/socket');
+  const ws = new WebSocket(websocketURL);
 
   const waitForWebsocketToBecomeActive = ()=>{
     return new Promise((resolve , reject)=>{
