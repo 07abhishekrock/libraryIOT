@@ -310,6 +310,7 @@ const createServer = async ()=>{
 
   })
 
+  isProd && app.use(express.static('dist'));
 
   app.use('*', async (req, res) => {
       try {
@@ -322,6 +323,7 @@ const createServer = async ()=>{
           finalHTML = await vite.transformIndexHtml(url, html);
         } else {
           finalHTML = fs.readFileSync(resolve('dist/index.html') , 'utf-8');
+          console.log(finalHTML);
         }
 
         res.status(200).set({ 'Content-Type': 'text/html' }).end(finalHTML);
