@@ -339,6 +339,6 @@ const createServer = async ()=>{
 
 createServer().then(({app , server})=>{
   server.listen(process.env.PORT || 3002 , ()=>{
-      console.log('listening on 3002');
+      console.log('listening on 3002' , process.env.PORT);
   })
 });
