@@ -285,6 +285,10 @@ const createServer = async ()=>{
     
     ws.type = 'unknown';
 
+    ws.on('error' , (e)=>{
+      console.log(e);
+    })
+
     ws.on('close' , ()=>{
       ws.isAlive = false;
       sendBrowserDeviceList();
