@@ -303,6 +303,7 @@ const createServer = async ()=>{
         clearTimeout(ws.pingTimeout);
         ws.isAlive = true;
         sendBrowserDeviceList();
+        ws.send('ping');
         ws.pingTimeout = setTimeout(()=>{
           ws.isAlive = false;
           sendBrowserDeviceList();
