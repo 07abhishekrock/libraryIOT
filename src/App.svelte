@@ -58,7 +58,7 @@
     }),
     '/' : redirectComponent(),
     '/status' : loginGuardedComponent(Status),
-    '/library' : loginGuardedComponent(Library)
+    '/library' : Library
   }
 
 

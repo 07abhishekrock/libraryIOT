@@ -64,6 +64,9 @@
     const deviceCode = $LibraryTransaction.deviceCode;
 
     if(deviceCode){
+
+      if(deviceCode.length < 4) return;
+
       const targetDevice = $LibraryTransaction.allDevicesList.filter(device=>device.code === deviceCode)[0];
       if(!targetDevice || !targetDevice.isActive){
 
